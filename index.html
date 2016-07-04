@@ -1,0 +1,235 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>Economics of Serverless</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=792, user-scalable=no">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<link rel="stylesheet" href="shower/themes/ribbon/styles/screen.css">
+</head>
+<body class="list">
+	<style>
+#Cover p.author {font-size: 200%;}
+</style>
+	<header class="caption">
+		<h1>Economics of Serverless</h1>
+		<p>Justin Cormack</p>
+	</header>
+	<section class="slide cover" id="Cover"><div>
+		<h2>Economics of Serverless</h2>
+		<h2 style="font-weight:normal; font-size: 150%"><em>Justin Cormack</em></h2>
+		<img src="pictures/steampowerstation.jpg" alt="" width="100%">
+		<!--
+			To apply styles to the certain slides
+			set slide ID to get needed elements
+			-->
+		<style>
+			#Cover h2 {
+				margin:30px 0 0;
+				color:#FFF;
+				text-align:center;
+				font-size:70px;
+				}
+			#Cover p {
+				margin:10px 0 0;
+				text-align:center;
+				color:#FFF;
+				font-style:italic;
+				font-size:20px;
+				}
+				#Cover p a {
+					color:#FFF;
+					}
+				a.linked { text-decoration: none; color: #fff; border: none;}
+                span.strike { text-decoration: line-through;}
+                .pic img { max-width:90%; height:90%; max-height: 90%;}
+                .pic a { text-decoration: none; color: #fff;}
+				.shiftimage { position: relative; top: -40px; left: 100px;}
+				.floatimage { float: right;}
+				pre.small { font-size: 60%;}
+				pre.tiny { font-size: 40%;}
+				.shout blockquote { font-size: 200%;}
+				.picgrid div {height: 100%; padding-top: 10px;}
+				.picgrid img {
+    			/*max-width:80px;*/
+    			display:inline-block;
+    			width:30%; height: 30%;
+				}
+				.picgrid:after{visibility:hidden}
+				.last:after{background:url(/pictures/lastwhale.png) no-repeat}
+				.slide pre { white-space: pre; font-family: monospace;}
+		</style>
+	</div></section>
+
+<section class="slide">
+<div>
+<h2>Justin Cormack</h2>
+<p>Cambridge, UK based engineer at Docker <a href="https://twitter.com/justincormack">@justincormack</a>
+<br/>&nbsp;
+	<img src="pictures/vector_h.svg" alt="" width="100%">
+</div>
+</section>
+
+
+<section class="slide">
+<div>
+	<h2>Can we use serverless everywhere?</h2>
+<ul>
+	<li>Serverless is here to stay, it is great
+	<li>We want the best implementations to be open source, even though that means servers.
+	<li>So lets figure out what it means for software and costs
+<ul>
+</div>
+</section>
+
+<section class="slide shout">
+<div>
+<h2>Why is Serverless Cheaper?</h2>
+</div>
+</section>
+
+<section class="slide">
+<div>
+	<h2>The most expensive component in a server is memory</h2>
+<ul>
+	<li>16GB uses around 7W, so around 0.5W/GB or 500W/TB
+  <li>You can share the CPU when idle, but your program remains in memory
+	<li>So you are renting memory space from a cloud provider
+<ul>
+</div>
+</section>
+
+<section class="slide">
+<div>
+	<h2>Modern applications use huge amounts of memory</h2>
+<ul>
+	<li>2TB Amazon instances are a thing (1kW plus cooling!)
+  <li>In memory caches: memcache, Redis, ...
+	<li>Because applications need this memory they need to pay the power consumption and occupy RAM even when idle
+<ul>
+</div>
+</section>
+
+<section class="slide shout">
+<div>
+<h2>Why Serverless Now?</h2>
+</div>
+</section>
+
+<section class="slide">
+<div>
+	<h2>What is the economics of serverless?</h2>
+<ul>
+	<li>Free up memory for other applications when idle
+  <li>Load the code from SSD instead
+	<li>SSD power consumoption is around 7W/TB, vs 500W/TB, so two orders of magnitude cheaper
+	<li>Only need enough RAM for the programs that are currently running
+<ul>
+</div>
+</section>
+
+<section class="slide">
+<div>
+	<h2>What is the downside?</h2>
+<pre class="small">
+	L1 cache reference                           0.5 ns
+	Branch mispredict                            5   ns
+	L2 cache reference                           7   ns
+	Mutex lock/unlock                           25   ns
+	Main memory reference                      100   ns
+	Send 1K bytes over 10 Gbps network       1,000   ns        1 us
+	Compress 1K bytes with Zippy             3,000   ns        3 us
+	Read 1 MB sequentially from memory      50,000   ns       50 us
+	Read 4K randomly from SSD*             150,000   ns      150 us
+	Round trip within same datacenter      500,000   ns      500 us
+	Read 1 MB sequentially from SSD*     1,000,000   ns    1,000 us    1 ms
+	Disk seek                           10,000,000   ns   10,000 us   10 ms
+	Send packet CA->Netherlands->CA    150,000,000   ns  150,000 us  150 ms
+</pre>
+</div>
+</section>
+
+<section class="slide">
+<div>
+	<h2>What is the downside?</h2>
+<ul>
+	<li>Latency is 150,000 ns vs 100 ns, three orders of magnitude worse!
+  <li>Sequential read performance is "only" 20 times slowe, one order of magnitude
+	<li>Random access somewhat in between due to heavy pipelining, if long queue depth eg 100 outstanding ops
+<ul>
+</div>
+</section>
+
+<section class="slide shout">
+<div>
+<h2>What does this mean for code?</h2>
+</div>
+</section>
+
+<section class="slide">
+<div>
+<ul>
+	<li>You have a latency budget based on required response time
+  <li>This limits the amount of code and data you can load from SSD
+	<li>You can have bigger data sets on SSD, but you will be limited by latency/iops in retrieval
+<ul>
+</div>
+</section>
+
+<section class="slide">
+<div>
+<ul>
+	<li>“Serverless is functions, containers are apps” <a href="https://twitter.com/monkchips">@monkchips</a>
+  <li>100MB functions aka microservices
+	<li>1GB containers aka applications
+	<li>10GB VMs aka systems
+<ul>
+</div>
+</section>
+
+<section class="slide">
+<div>
+	<h2>Two ways of reducing code size</h2>
+<ul>
+	<li>Share code. Containers share the kernel.
+  <li>Share code. Can share language runtime, but only if exactly the same version.
+	<li>Reduce code. Specialise code to minimum needed, as with unikernels. Harder but gets similar size with no compromises.
+<ul>
+</div>
+</section>
+
+<section class="slide">
+<div>
+	<h2>Serverless code checklist</h2>
+<ul>
+	<li>No legacy code.
+  <li>Raw performance not the crutch of cacheing
+	<li>New multitenant databases (minimise seeks) thats why DynamoDB came before Lambda
+	<li>Controlled sharing of code where possible eg kernel with containers
+	<li>Static linking, whole program optimisation, AOT compilation
+	<li>JIT is usually pointless, a very fast interpreter better for dynamic code.
+<ul>
+</div>
+</section>
+
+
+<section class="slide last">
+<div>
+<h2>Questions?</h2>
+<ul>
+<li><a href="https://twitter.com/justincormack">@justincormack</a>
+<li>justin.cormack@docker.com
+<p>&nbsp;
+	<img src="pictures/vector_h.svg" alt="" width="100%"/>
+</div>
+</section>
+
+
+	<!--p class="badge"><a href="https://github.com/justincormack/dockercon2016">Fork me on Github</a></p-->
+	<!--
+		To hide progress bar from entire presentation
+		just remove “progress” element.
+		-->
+	<div class="progress"><div></div></div>
+	<script src="shower/shower.min.js"></script>
+</html>
