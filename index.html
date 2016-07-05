@@ -93,6 +93,7 @@
 	<h2>The most expensive component in a server is memory</h2>
 <ul>
 	<li>16GB uses around 7W, so around 0.5W/GB or 500W/TB
+	<li>Around $4/GB or $4000/TB capital costs
   <li>You can share the CPU when idle, but your program remains in memory
 	<li>So you are renting memory space from a cloud provider
 <ul>
@@ -122,8 +123,10 @@
 <ul>
 	<li>Free up memory for other applications when idle
   <li>Load the code from SSD instead
-	<li>SSD power consumoption is around 7W/TB, vs 500W/TB, so two orders of magnitude cheaper
+	<li>SSD power consumption is around 7W/TB, vs 500W/TB, so 1% of the power consumption
+	<li>Capital cost is $0.39/GB vs $4/GB for RAM, so an order of magnitude cheaper
 	<li>Only need enough RAM for the programs that are currently running
+	<li>If your program runs at full capacity of whole number of machines 24/7 will benefit less of course
 <ul>
 </div>
 </section>
@@ -203,7 +206,7 @@
 	<h2>Serverless code checklist</h2>
 <ul>
 	<li>No legacy code.
-  <li>Raw performance not the crutch of cacheing
+  <li>Raw performance not the crutch of caching
 	<li>New multitenant databases (minimise seeks) thats why DynamoDB came before Lambda
 	<li>Controlled sharing of code where possible eg kernel with containers
 	<li>Static linking, whole program optimisation, AOT compilation
